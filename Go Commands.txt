@@ -1,3 +1,3 @@
-go mod vendor
-go mod tidy
-go build && ./program.exe
+go mod vendor -> to create a local copy of the project's dependencies inside a vendor folder.
+go mod tidy -> 
+go build && ./program.exe 
