@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	godotenv.Load(".env")
+	godotenv.Load(".env") //by defalut go imports the .env file
 	
 
 	portString := os.Getenv("PORT")
