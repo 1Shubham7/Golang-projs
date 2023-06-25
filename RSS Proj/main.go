@@ -32,6 +32,8 @@ func main() {
 		MaxAge: 300,
 	}))
 
+	v1Router := chi.NewRouter()
+
 	srv := &http.Server{
 		Handler : router,
 		Addr : ":" + portString,
