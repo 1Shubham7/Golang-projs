@@ -11,7 +11,11 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	a := rand.Intn(1000)
 	b := rand.Intn(1000)
-	fmt.Println((question(a,b)))
+	fmt.Printf("Enter the result of = %v + %v\n",a,b )
+	var myAnswer int 
+	fmt.Scanln(&myAnswer)
+	result := question(a,b)
+	fmt.Println((answer(myAnswer,result)))
 
 }
 
@@ -20,8 +24,8 @@ func question(a,b int) int{
 	return result
 }
 
-func answer(a,b,result int)bool{
-	if (a+b)==result {
+func answer(result, myAnswer int) bool{
+	if myAnswer==result {
 		return true
 	} else{
 		return false
