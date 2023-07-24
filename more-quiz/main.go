@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"time"
 )
@@ -13,12 +12,12 @@ func main() {
 	fileName := flag.String("f", "quiz.csv", "path of the file")
 	timer := flag.Int("t", 30, "timer for the quiz")
 	flag.Parse()
-	questionAndAnswer,err := pullQuestion(fileName)
+	questionAndAnswer,err := pullQuestion(*fileName)
 	if err != nil{
-		exit("Something went wrong, try again later: %w, file: %s", err, fileName)
+		exit(fmt.Sprintf("Something went wrong, try again later: %w, file: %s", err, fileName))
 	}
 	correctAnswer := 0
-	tObj := time.NewTimer(time.Duration(timer)*time.Second)
+	tObj := time.NewTimer(time.Duration(*timer)*time.Second)
 	ansC := make(chan string)
 
 	problemLoop:
@@ -30,12 +29,24 @@ func main() {
 			go func() {
 				fmt.Scanf("%s", &answer)
 				ansC <- answer
-			}
-			fmt.Scanln(&answer)
-			if answer == questionAndAnswer[i].answer{
-				correctAnswer++
+			}()
+			select{
+			case <-tObj.C:
+				fmt.Println()
+				break problemLoop
+			case iAns := <-ansC:
+				if iAns == p.answer{
+                    correctAnswer++
+				}
+				if i==len(questionAndAnswer)-1{
+					close(ansC)
+				}
 			}
 		}
+
+		fmt.Printf("You scored %d marks out of %d", correctAnswer, len(questionAndAnswer))
+		fmt.Println("\nPress Enter to exit")
+		<-ansC
 }
 
 func pullQuestion(fileName string)([]questionAndAnswer, error){
@@ -54,16 +65,16 @@ func pullQuestion(fileName string)([]questionAndAnswer, error){
 
 }
 
-type problem struct{
+type questionAndAnswer struct{
 	question string
 	answer string
 }
 
-func praseQuestion(allQuestions [][]string) []questionAndAnswer{
+func parseQuestion(allQuestions [][]string) []questionAndAnswer{
 	
 	r := make ([]questionAndAnswer, len(allQuestions))
 	for i := 0; i<len(allQuestions); i++{
-		r[i] = questionAndAnswer{question: allQuestions[i][[0], answer: allQuestions[i][1]]}
+		r[i] = questionAndAnswer{question: allQuestions[i][0], answer: allQuestions[i][1]}
 	}
 	return r
 }
