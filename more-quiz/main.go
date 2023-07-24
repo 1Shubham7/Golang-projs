@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -17,14 +18,24 @@ func main() {
 		exit("Something went wrong, try again later: %w, file: %s", err, fileName)
 	}
 	correctAnswer := 0
-	var answer string
-	for i,p := range questionAndAnswer{
-		fmt.Println("Q: "+ questionAndAnswer[i].question)
-		fmt.Scanln(&answer)
-		if answer == questionAndAnswer[i].answer{
-			correctAnswer++
+	tObj := time.NewTimer(time.Duration(timer)*time.Second)
+	ansC := make(chan string)
+
+	problemLoop:
+		// var answer string
+		for i,p := range questionAndAnswer{
+			var answer string
+			fmt.Println("Q: "+ p.question)
+
+			go func() {
+				fmt.Scanf("%s", &answer)
+				ansC <- answer
+			}
+			fmt.Scanln(&answer)
+			if answer == questionAndAnswer[i].answer{
+				correctAnswer++
+			}
 		}
-	}
 }
 
 func pullQuestion(fileName string)([]questionAndAnswer, error){
