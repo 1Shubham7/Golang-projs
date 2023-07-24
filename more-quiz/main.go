@@ -1,38 +1,37 @@
 package main
 
-import(
+import (
+	"encoding/csv"
+	"flag"
 	"fmt"
+	"log"
 	"os"
 )
 
-func main(){
-	file, err := os.Open("quiz.csv")
-	if err != nil {
-		fmt.Println("Something went wrong, please try again later :", err)
-		return
+func main() {
+	fileName := flag.String("f", "quiz.csv", "path of the file")
+	timer := flag.Int("t", 30, "timer for the quiz")
+	flag.Parse()
+	problems,err := pullQuestion(fileName)
+	if err != nil{
+		exit("Something went wrong, try again later: %w, file: %s", err, fileName)
 	}
-	const bufferSize = 1024
-
-	buffer := make([]byte, bufferSize)
-	for {
-		bytesRead, err:= file.Read(buffer)
-		fmt.Println(string(buffer[:bytesRead]))
-		if err != nil{
-			fmt.Println("Error reading file", err)
-			break
-		}
-		if bytesRead == 0{
-			break
-		}
-	}
+	correctAnswer := 0
+}
 
 func pullQuestion(fileName string)([]question, error){
 
-}
+	if fObj, err := os.Open(fileName); err == nil {
+		csvR := csv.NewReader(fObj)
+		if cLines, err := csvR.ReadAll(); err == nil{
+			return parseQuestion(cLines), nil
+		} else {
+			return nil, fmt.Errorf("Error reading the file %s: %w", fileName, err)
+		}
+	} else {
+		return nil, fmt.Errorf("Error opening file %s", fileName);
+	}
 
-
-
-	defer file.Close()
 
 }
 
@@ -41,4 +40,11 @@ type problem struct{
 	answer string
 }
 
-func praseProblem
+func praseQuestion(lines [][]string) []question{
+	
+	return []
+}
+
+
+// what did I learn -
+// how to read a csv file using encoding/csv
